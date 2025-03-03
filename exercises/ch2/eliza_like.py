@@ -2,13 +2,11 @@ import re
 
 
 class ElizaLike:
-    """
-    A business consultant program that behaves like Eliza of Weizenbaum (1966)
-    """
+    "A simple consultant program that behaves like Eliza of Weizenbaum (1966)"
 
     def __init__(self):
-        "list of tuples for patterns and their templates"
-        self.TUPLES = [
+        "list of question patterns and their answer templates"
+        self.ANSWERS = [
             (re.compile(r".*HOW TO\s+(.*)"), r"OH SO YOU WANT TO \1"),
             (
                 re.compile(r".*WHAT IS THE BEST\s+.*\s+TO\s+(.*)"),
@@ -24,7 +22,7 @@ class ElizaLike:
         for pattern, template in self.COMMONS:
             if pattern.search(s):
                 s = pattern.sub(template, s)
-        for pattern, template in self.TUPLES:
+        for pattern, template in self.ANSWERS:
             if pattern.search(s):
                 out = pattern.sub(template, s)
                 break
