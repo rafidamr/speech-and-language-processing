@@ -3,7 +3,7 @@ import re
 
 class ElizaLike:
     """
-    A business consultant program that behaves like Eliza
+    A business consultant program that behaves like Eliza of Weizenbaum (1966)
     """
 
     def __init__(self):
