@@ -26,3 +26,28 @@ def test_2_3():
         el.answer("What is the best way to sell my properties")
         == "YOU HAVE TO LOOK UP DATA TO SELL YOUR PROPERTIES"
     )
+
+
+def test_2_4():
+    med = ch2.MinimumEditDistance("leda", "deal", s_cost=1)
+    assert (
+        med.get_grid()
+        == r"   #  d  e  a  l  \n#  0  1  2  3  4  \nl  1  1  2  3  3  \ne  2  2  1  2  3  \nd  3  2  2  2  3  \na  4  3  3  2  3  \n"
+    )
+
+
+def test_2_5():
+    med1 = ch2.MinimumEditDistance("drive", "brief", s_cost=1)
+    med2 = ch2.MinimumEditDistance("drive", "divers", s_cost=1)
+    assert med1.get_distance() == med2.get_distance()
+    med1 = ch2.MinimumEditDistance("drive", "brief", s_cost=2)
+    med2 = ch2.MinimumEditDistance("drive", "divers", s_cost=2)
+    assert med1.get_distance() > med2.get_distance()
+
+
+def test_2_6__2_7():
+    med = ch2.MinimumEditDistanceAndAlignment("INTENTION", "EXECUTION", s_cost=2)
+    assert (
+        med.get_alignment()
+        == r"I * <- delete\nN E <- substitute\nT X <- substitute\nE E\n* C <- insert\nN U <- substitute\nT T\nI I\nO O\nN N\n"
+    )

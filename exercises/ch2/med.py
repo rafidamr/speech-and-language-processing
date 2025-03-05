@@ -1,5 +1,6 @@
 class MinimumEditDistance:
     def __init__(self, s1: str, s2: str, d_cost=1, i_cost=1, s_cost=1):
+        self.s1, self.s2 = s1, s2
         m, n = len(s1), len(s2)
         self.grid = [[0] * (n + 1) for _ in range(m + 1)]
         for i in range(1, m + 1):
@@ -21,12 +22,21 @@ class MinimumEditDistance:
     def get_distance(self):
         return self.grid[-1][-1]
 
-    def print_grid(self):
+    def get_grid(self):
+        out = "   #  "
+        for j in range(len(self.grid[-1]) - 1):
+            out += f"{self.s2[j]}  "
+        out += r"\n"
         for i in range(len(self.grid)):
+            if i == 0:
+                out += "#  "
+            else:
+                out += f"{self.s1[i - 1]}  "
             for j in range(len(self.grid[-1])):
                 end = " " if self.grid[i][j] / 10 >= 1 else "  "
-                print(self.grid[i][j], end=end)
-            print("\n")
+                out += f"{self.grid[i][j]}{end}"
+            out += r"\n"
+        return out
 
 
 class Step:
@@ -39,7 +49,7 @@ class Step:
         return min(self.insertion, self.deletion, self.substitution)
 
 
-class MinimumEditDistanceAndAlignment:
+class MinimumEditDistanceAndAlignment(MinimumEditDistance):
     def __init__(self, s1: str, s2: str, d_cost=1, i_cost=1, s_cost=1):
         step = 1
         self.s1, self.s2 = s1, s2
@@ -77,57 +87,46 @@ class MinimumEditDistanceAndAlignment:
                     prev = self.steps[i - 1][j - 1]
                     self.steps[i][j].substitution = prev.get_min() + step
 
-    def get_distance(self):
-        return self.grid[-1][-1]
-
-    def print_grid(self):
-        print("   #", end="  ")
-        for j in range(len(self.grid[-1]) - 1):
-            print(self.s2[j], end="  ")
-        print()
-        for i in range(len(self.grid)):
-            if i == 0:
-                print("#", end="  ")
-            else:
-                print(self.s1[i - 1], end="  ")
-            for j in range(len(self.grid[-1])):
-                end = " " if self.grid[i][j] / 10 >= 1 else "  "
-                print(self.grid[i][j], end=end)
-            print()
-
-    def print_alignment(self):
+    def get_alignment(self):
         ops = []
-        i, j = len(self.steps) - 2, len(self.steps[0]) - 2
+        i, j = len(self.steps) - 1, len(self.steps[0]) - 1
         while i >= 0 and j >= 0:
-            c1, c2 = self.s1[i], self.s2[j]
+            if i == 0 and j == 0:
+                break
             curr = self.steps[i][j]
             m = curr.get_min()
 
-            if curr.deletion == m:
-                ops.append("delete")
-                i -= 1
+            if curr.substitution == m:
+                ops.append("substitute")
+                i, j = i - 1, j - 1
             elif curr.insertion == m:
                 ops.append("insert")
                 j -= 1
-            elif curr.substitution == m:
-                ops.append("substitute")
-                i, j = i - 1, j - 1
-        print(ops)
+            elif curr.deletion == m:
+                ops.append("delete")
+                i -= 1
+
         i, j = 0, 0
+        out = ""
         while len(ops) > 0:
-            c1, c2 = self.s1[i], self.s2[j]
+            if i < len(self.s1):
+                c1 = self.s1[i]
+            if j < len(self.s2):
+                c2 = self.s2[j]
             op = ops.pop()
-            if op == "delete":
-                i += 1
-                c2 = "*"
-            elif op == "insert":
+            if op == "insert":
                 j += 1
                 c1 = "*"
+            elif op == "delete":
+                i += 1
+                c2 = "*"
             else:
                 i, j = i + 1, j + 1
-            print(f"{op}: {c1} {c2}")
 
-
-med = MinimumEditDistanceAndAlignment("intention", "execution", s_cost=2)
-med.print_grid()
-med.print_alignment()
+            if c1 != c2:
+                out += f"{c1} {c2} <- {op}"
+                out += r"\n"
+            else:
+                out += f"{c1} {c2}"
+                out += r"\n"
+        return out
